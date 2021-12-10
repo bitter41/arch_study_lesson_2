@@ -2,6 +2,12 @@ package Calc;
 
 use Data::Dumper;
 
+use constant OPERATOR_LEXEMES_PRIORITY => {
+    '*' => 1,
+    '/' => 1,
+    '+' => 0,
+    '-' => 0, 
+}; 
 use constant OPERATOR_LEXEMES_LIST => ( '+', '-', '*', '/' );
 use constant OPEN_BRACKET_LEXEME   => '(';
 use constant CLOSE_BRACKET_LEXEME  => ')';
@@ -35,7 +41,7 @@ sub convert_to_reverse_polish_notation {
             $result_in_rpn .= $lexeme;
         }
         elsif ( __is_operator($lexeme) ) {
-            $result_in_rpn .= __unload_operators(\@stack);
+            $result_in_rpn .= __unload_operators(\@stack, $lexeme);
             __push_to_stack( \@stack, $lexeme );
         }
         elsif ( __is_open_bracket($lexeme) ) {
@@ -172,5 +178,69 @@ sub __is_close_bracket {
     return 0;
 }
 
+=head2 C<__push_to_stack>($stack_ref, $lexeme)
+
+Поместить лексему в стек
+
+=cut
+
+sub __push_to_stack {
+    my ( $stack_ref, $lexeme ) = @_;
+
+    die 'Argument must be array ref' if ref $stack_ref ne 'ARRAY';
+
+    push @$stack_ref, $lexeme;
+}
+
+=head2 C<__unload_stack>($stack_ref)
+
+Выгрузить стек, вернув результат в виде строки
+
+=cut
+
+sub __unload_stack {
+    my ($stack_ref) = @_;
+
+    die 'Argument must be array ref' if ref $stack_ref ne 'ARRAY';
+
+    my $result             = '';
+    my $open_bracket_found = 0;
+    while (@$stack_ref) {
+        my $lexeme = pop @$stack_ref;
+        if ($lexeme eq OPEN_BRACKET_LEXEME) {
+            $open_bracket_found = 1;
+            last;
+        };
+        $result .= $lexeme;
+    }
+
+    die 'Seems you missed open bracket' unless $open_bracket_found;
+
+    return $result;
+}
+
+=head2 C<__unload_operators>($stack_ref, $operator_lexeme)
+
+Выгрузить операторы из стека, вернув результат в виде строки
+
+=cut
+
+sub __unload_operators {
+    my ($stack_ref, $operator_lexeme) = @_;
+
+    die 'Argument must be array ref'       if ref $stack_ref ne 'ARRAY';
+    die 'Argument must by operator lexeme' unless __is_operator($operator_lexeme);
+
+    my $result = '';
+    while (@$stack_ref) {
+        my $lexeme_from_top = $stack_ref->[-1];
+        last unless __is_operator($lexeme_from_top);
+        last if OPERATOR_LEXEMES_PRIORITY->{$lexeme_from_top} < OPERATOR_LEXEMES_PRIORITY->{$operator_lexeme};
+
+        $result .= pop @$stack_ref;
+    }
+
+    return $result;
+}
 
 1;

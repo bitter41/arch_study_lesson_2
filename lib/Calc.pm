@@ -87,9 +87,24 @@ sub __is_lexeme {
         return 1 if $lexeme eq $allow_lexeme;
     }
 
-    print Dumper($lexeme);
-
     return 0;
 }
 
+=head2 C<__is_number>($lexeme)
+
+Является ли переданная лексема числом?
+
+=cut
+
+sub __is_number {
+    my ($lexeme) = @_; 
+
+    $lexeme ||= '';
+
+    return 0 if length($lexeme) != 1;
+
+    return 1 if $lexeme =~ /\d/;
+
+    return 0;
+}
 1;

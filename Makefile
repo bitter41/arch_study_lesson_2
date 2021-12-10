@@ -6,7 +6,5 @@ tests:
 run:
 	docker run -it --rm --name archstudylesson2 archstudylesson2
 test:
-	#docker run -it --rm --name archstudylesson2 archstudylesson2 perl ./t/__is_lexeme.t
+	docker run -it --rm --name archstudylesson2 archstudylesson2 perl ./t/__is_number.t
 	docker run -it --rm --name archstudylesson2 archstudylesson2 perl ./t/convert_to_reverse_polish_notation_int.t
-
-

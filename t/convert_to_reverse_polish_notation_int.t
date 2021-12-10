@@ -10,32 +10,10 @@ describe 'convert_to_reverse_polish_notation: ' => sub {
     };
 
     describe '[SUCCESS] ' => sub {
-        my @is_operator_mock;
-        my @is_open_bracket_mock;
-        my @is_close_bracket_mock;
         my @stack;
 
         before each => sub {
-            @is_operator_mock      = (0,  0,1,0,  0,0,1,0,  0,1,0  );
-            @is_open_bracket_mock  = (1,  0,  0,  0,0,  0,  0,  0  );
-            @is_close_bracket_mock = (    0,  0,  1,0,  0,  0,  0  );
             @stack = ();
-
-            Calc->expects('__is_operator')->returns(
-                sub {
-                    shift @is_operator_mock;
-                }
-            )->exactly(11);
-            Calc->expects('__is_open_bracket')->returns(
-                sub {
-                    shift @is_open_bracket_mock;
-                }                
-            )->exactly(8);
-            Calc->expects('__is_close_bracket')->returns(
-                sub {
-                    shift @is_close_bracket_mock;
-                }   
-            )->exactly(7);
 
             Calc->expects('__push_to_stack')->returns(sub { push @stack, $_[1]; })->exactly(4);
         };

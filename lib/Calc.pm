@@ -2,7 +2,15 @@ package Calc;
 
 use Data::Dumper;
 
-use constant LEXEMES_ALLOW_LIST => ( '(', ')', ' ', '+', '-', '*', '/' );
+use constant OPERATOR_LEXEMES_LIST => ( '+', '-', '*', '/' );
+use constant OPEN_BRACKET_LEXEME   => '(';
+use constant CLOSE_BRACKET_LEXEME  => ')';
+use constant LEXEMES_ALLOW_LIST    => ( 
+                                        ' ',
+                                        OPEN_BRACKET_LEXEME,
+                                        CLOSE_BRACKET_LEXEME
+                                      ),
+                                      OPERATOR_LEXEMES_LIST;
 
 =head2 C<convert_to_reverse_polish_notation>($expression)
 
@@ -107,4 +115,62 @@ sub __is_number {
 
     return 0;
 }
+
+=head2 C<__is_operator>($lexeme)
+
+Является ли переданная лексема оператором?
+
+=cut
+
+sub __is_operator {
+    my ($lexeme) = @_; 
+
+    $lexeme ||= '';
+
+    return 0 if length($lexeme) != 1;
+
+    foreach my $allow_lexeme (OPERATOR_LEXEMES_LIST) {
+        return 1 if $lexeme eq $allow_lexeme;
+    }
+
+    return 0;
+}
+
+=head2 C<__is_open_bracket>($lexeme)
+
+Является ли переданная лексема открывающей скобкой?
+
+=cut
+
+sub __is_open_bracket {
+    my ($lexeme) = @_; 
+
+    $lexeme ||= '';
+
+    return 0 if length($lexeme) != 1;
+
+    return 1 if $lexeme eq OPEN_BRACKET_LEXEME;
+
+    return 0;
+}
+
+=head2 C<__is_close_bracket>($lexeme)
+
+Является ли переданная лексема закрывающей скобкой?
+
+=cut
+
+sub __is_close_bracket {
+    my ($lexeme) = @_; 
+
+    $lexeme ||= '';
+
+    return 0 if length($lexeme) != 1;
+
+    return 1 if $lexeme eq CLOSE_BRACKET_LEXEME;
+
+    return 0;
+}
+
+
 1;

@@ -48,12 +48,12 @@ sub convert_to_reverse_polish_notation {
             __push_to_stack( \@stack, $lexeme );
         }
         elsif ( __is_close_bracket($lexeme) ) {
-            my $u = __unload_stack( \@stack );
+            my $u = __unload_stack_to_open_bracket( \@stack );
             #print Dumper($u);
             $result_in_rpn .= $u;
         }
     }
-    $result_in_rpn .= "$_ " foreach (reverse @stack);
+    $result_in_rpn .= __unload_stack( \@stack );
 
     #print Dumper(\@expression_array);
 
@@ -192,13 +192,13 @@ sub __push_to_stack {
     push @$stack_ref, $lexeme;
 }
 
-=head2 C<__unload_stack>($stack_ref)
+=head2 C<__unload_stack_to_open_bracket>($stack_ref)
 
-Выгрузить стек, вернув результат в виде строки
+Выгрузить стек до открывающей скобки, вернув результат в виде строки
 
 =cut
 
-sub __unload_stack {
+sub __unload_stack_to_open_bracket {
     my ($stack_ref) = @_;
 
     die 'Argument must be array ref' if ref $stack_ref ne 'ARRAY';
@@ -215,6 +215,27 @@ sub __unload_stack {
     }
 
     die 'Seems you missed open bracket' unless $open_bracket_found;
+
+    return $result;
+}
+
+=head2 C<__unload_stack>($stack_ref)
+
+Выгрузить стек, вернув результат в виде строки
+
+=cut
+
+sub __unload_stack {
+    my ($stack_ref) = @_;
+
+    die 'Argument must be array ref' if ref $stack_ref ne 'ARRAY';
+
+    my $result = '';
+    while (@$stack_ref) {
+        my $lexeme = pop @$stack_ref;
+        die 'Seems you missed close bracket' if $lexeme eq OPEN_BRACKET_LEXEME;
+        $result .= "$lexeme ";
+    }
 
     return $result;
 }

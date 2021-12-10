@@ -16,25 +16,25 @@ describe '__unload_stack: ' => sub {
             like( $trap->die, qr/Argument must be array ref/ ) or diag( $trap->die );
         };
 
-        it 'should confess if not found open bracket in stack' => sub {
-            my @stack = qw/ 1 2 3 4 5 6 /;
+        it 'should confess if found open bracket in stack' => sub {
+            my @stack = qw/ 1 2 3 ( 4 5 6 /;
 
             trap { Calc::__unload_stack( \@stack ) };
 
-            like( $trap->die, qr/Seems you missed open bracket/ ) or diag( $trap->die );
+            like( $trap->die, qr/Seems you missed close bracket/ ) or diag( $trap->die );
         };
 
     };
 
     describe '[BRANCH] ' => sub {
 
-        it 'should unload part of stack to open bracket' => sub {
-            my @stack = qw/ 1 2 3 ( 4 5 6 /;
+        it 'should unload stack to open bracket' => sub {
+            my @stack = qw/ 1 2 3 4 5 6 /;
 
             my $result = Calc::__unload_stack( \@stack );
 
-            is $result, '6 5 4 ';
-            cmp_deeply(\@stack, [qw/ 1 2 3 /]);
+            is $result, '6 5 4 3 2 1 ';
+            cmp_deeply(\@stack, []);
         };
 
     };

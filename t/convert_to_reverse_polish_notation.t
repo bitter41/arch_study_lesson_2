@@ -80,7 +80,7 @@ describe 'convert_to_reverse_polish_notation: ' => sub {
             Calc->expects('__is_operator')->returns(0)->exactly(3);
             Calc->expects('__is_open_bracket')->returns(0)->exactly(3);
             Calc->expects('__is_close_bracket')->returns(1)->exactly(3);
-            Calc->expects('__unload_stack')->returns(')')->exactly(3);
+            Calc->expects('__unload_stack_to_open_bracket')->returns(')')->exactly(3);
 
             my $result = Calc::convert_to_reverse_polish_notation( ')))' );
 
@@ -131,7 +131,7 @@ describe 'convert_to_reverse_polish_notation: ' => sub {
 
         it 'base check stack' => sub {
             Calc->expects('__unload_operators')->returns('<unload_operators_call>')->exactly(3);
-            Calc->expects('__unload_stack')->returns('<some_unload_result>')->once;
+            Calc->expects('__unload_stack_to_open_bracket')->returns('<some_unload_result>')->once;
 
             my $result = Calc::convert_to_reverse_polish_notation( '(1 + 2) * 4 + 3' );
 
@@ -140,7 +140,7 @@ describe 'convert_to_reverse_polish_notation: ' => sub {
 
         it 'base check operations in result' => sub {
             Calc->expects('__unload_operators')->returns('<unload_operators_call>')->exactly(3);
-            Calc->expects('__unload_stack')->returns('<some_unload_stack_result>')->once;
+            Calc->expects('__unload_stack_to_open_bracket')->returns('<some_unload_stack_result>')->once;
 
             my $result = Calc::convert_to_reverse_polish_notation( '(1 + 2) * 4 + 3' );
 
@@ -160,7 +160,7 @@ describe 'convert_to_reverse_polish_notation: ' => sub {
                     return $result;
                 }
             )->exactly(3);
-            Calc->expects('__unload_stack')->returns(
+            Calc->expects('__unload_stack_to_open_bracket')->returns(
                 sub {
                     my $result = '';
                     while (@stack) {

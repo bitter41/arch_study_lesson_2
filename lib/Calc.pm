@@ -38,7 +38,7 @@ sub convert_to_reverse_polish_notation {
         next unless __is_lexeme($lexeme);
 
         if ( __is_number($lexeme) ) {
-            $result_in_rpn .= $lexeme;
+            $result_in_rpn .= "$lexeme ";
         }
         elsif ( __is_operator($lexeme) ) {
             $result_in_rpn .= __unload_operators(\@stack, $lexeme);
@@ -53,7 +53,7 @@ sub convert_to_reverse_polish_notation {
             $result_in_rpn .= $u;
         }
     }
-    $result_in_rpn .= $_ foreach (reverse @stack);
+    $result_in_rpn .= "$_ " foreach (reverse @stack);
 
     #print Dumper(\@expression_array);
 
@@ -211,7 +211,7 @@ sub __unload_stack {
             $open_bracket_found = 1;
             last;
         };
-        $result .= $lexeme;
+        $result .= "$lexeme ";
     }
 
     die 'Seems you missed open bracket' unless $open_bracket_found;
@@ -238,6 +238,7 @@ sub __unload_operators {
         last if OPERATOR_LEXEMES_PRIORITY->{$lexeme_from_top} < OPERATOR_LEXEMES_PRIORITY->{$operator_lexeme};
 
         $result .= pop @$stack_ref;
+        $result .= ' ';
     }
 
     return $result;

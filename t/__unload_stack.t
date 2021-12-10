@@ -33,7 +33,7 @@ describe '__unload_stack: ' => sub {
 
             my $result = Calc::__unload_stack( \@stack );
 
-            is $result, '654';
+            is $result, '6 5 4 ';
             cmp_deeply(\@stack, [qw/ 1 2 3 /]);
         };
 

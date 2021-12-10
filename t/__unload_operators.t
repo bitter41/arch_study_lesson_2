@@ -49,7 +49,7 @@ describe '__unload_operators: ' => sub {
 
             my $result = Calc::__unload_operators( \@stack, '-' );
 
-            is $result, '*';
+            is $result, '* ';
             cmp_deeply(\@stack, [qw/ 4 4 4 /]);
         };
 
@@ -58,7 +58,7 @@ describe '__unload_operators: ' => sub {
 
             my $result = Calc::__unload_operators( \@stack, '+' );
 
-            is $result, '-';
+            is $result, '- ';
             cmp_deeply(\@stack, [qw/ 4 4 4 /]);
         };
 
@@ -67,7 +67,7 @@ describe '__unload_operators: ' => sub {
 
             my $result = Calc::__unload_operators( \@stack, '-' );
 
-            is $result, '**/';
+            is $result, '* * / ';
             cmp_deeply(\@stack, [qw/ 4 /]);
         };
 

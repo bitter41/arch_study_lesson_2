@@ -12,7 +12,7 @@ describe 'convert_to_reverse_polish_notation: ' => sub {
     describe '[SUCCESS] ' => sub {
 
         it 'base check result' => sub {
-            is Calc::convert_to_reverse_polish_notation( '(1 + 2) * 4 + 3' ), '12+4*3+';
+            is Calc::convert_to_reverse_polish_notation( '(1 + 2) * 4 + 3' ), '1 2 + 4 * 3 + ';
         };
 
     };

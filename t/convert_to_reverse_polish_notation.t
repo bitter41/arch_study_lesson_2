@@ -44,7 +44,7 @@ describe 'convert_to_reverse_polish_notation: ' => sub {
 
             my $result = Calc::convert_to_reverse_polish_notation( '333' );
 
-            is $result, '333';
+            is $result, '3 3 3 ';
         };
 
         it 'all input has only operator lexemes' => sub {
@@ -144,7 +144,7 @@ describe 'convert_to_reverse_polish_notation: ' => sub {
 
             my $result = Calc::convert_to_reverse_polish_notation( '(1 + 2) * 4 + 3' );
 
-            is $result, '1<unload_operators_call>2<some_unload_stack_result><unload_operators_call>4<unload_operators_call>3';
+            is $result, '1 <unload_operators_call>2 <some_unload_stack_result><unload_operators_call>4 <unload_operators_call>3 ';
         };
 
         it 'base check result' => sub {
@@ -174,7 +174,7 @@ describe 'convert_to_reverse_polish_notation: ' => sub {
             )->once;
             my $result = Calc::convert_to_reverse_polish_notation( '(1 + 2) * 4 + 3' );
 
-            is $result, '12+4*3';
+            is $result, '1 2 +4 *3 ';
         };
 
     };

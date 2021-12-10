@@ -2,7 +2,7 @@ package Calc;
 
 use Data::Dumper;
 
-use constant LEXEMES_ALLOW_REGEXP_LIST => ( '(', ')', ' ', '+', '-', '*', '/' );
+use constant LEXEMES_ALLOW_LIST => ( '(', ')', ' ', '+', '-', '*', '/' );
 
 =head2 C<convert_to_reverse_polish_notation>($expression)
 
@@ -56,7 +56,7 @@ sub __has_any_wrong_lexemes {
     my ($expression) = @_; 
 
     # Вырежем лексемы по списку
-    $expression =~ s|\Q$_||g foreach (LEXEMES_ALLOW_REGEXP_LIST);
+    $expression =~ s|\Q$_||g foreach (LEXEMES_ALLOW_LIST);
 
     # Вырежем числовые лексемы
     $expression =~ s|\d+||g;
@@ -66,6 +66,30 @@ sub __has_any_wrong_lexemes {
     print Dumper($expression);
 
     return 1;
+}
+
+=head2 C<__is_lexeme>($lexeme)
+
+Является ли переданная строка лексемой?
+
+=cut
+
+sub __is_lexeme {
+    my ($lexeme) = @_; 
+
+    $lexeme ||= '';
+
+    return 0 if length($lexeme) != 1;
+
+    return 1 if $lexeme =~ /\d/;
+
+    foreach my $allow_lexeme (LEXEMES_ALLOW_LIST) {
+        return 1 if $lexeme eq $allow_lexeme;
+    }
+
+    print Dumper($lexeme);
+
+    return 0;
 }
 
 1;

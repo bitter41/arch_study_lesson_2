@@ -23,7 +23,6 @@ describe 'convert_to_reverse_polish_notation: ' => sub {
             @is_close_bracket_mock = (    0,  0,  1,0,  0,  0,  0  );
             @stack = ();
 
-            Calc->expects('__is_lexeme')->returns(1)->exactly(15);
             Calc->expects('__is_number')->returns(
                 sub {
                     shift @is_number_mock;

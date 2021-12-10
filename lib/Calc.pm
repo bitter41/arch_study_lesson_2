@@ -2,6 +2,8 @@ package Calc;
 
 use Data::Dumper;
 
+use constant LEXEMES_ALLOW_REGEXP_LIST => ( '(', ')', ' ', '+', '-', '*', '/' );
+
 =head2 C<convert_to_reverse_polish_notation>($expression)
 
 Конвертировать выражение в обратную польскую запись
@@ -13,8 +15,8 @@ sub convert_to_reverse_polish_notation {
 
     my $result_in_rpn = '';
 
-    die 'Argument must be string'        if ref $expression;
-    die 'Found wrong lexeme in argument' if __has_any_wrong_lexemes($expression);
+    die 'Argument must be string'                     if ref $expression;
+    die "Found wrong lexeme in argument: $expression" if __has_any_wrong_lexemes($expression);
 
     my @stack = ();
     my @expression_array = split //, $expression;
@@ -42,6 +44,28 @@ sub convert_to_reverse_polish_notation {
     #print Dumper(\@expression_array);
 
     return $result_in_rpn;
+}
+
+=head2 C<__has_any_wrong_lexemes>($expression)
+
+Есть ли в выражении какие нибудь неправильные лексемы?
+
+=cut
+
+sub __has_any_wrong_lexemes {
+    my ($expression) = @_; 
+
+    # Вырежем лексемы по списку
+    $expression =~ s|\Q$_||g foreach (LEXEMES_ALLOW_REGEXP_LIST);
+
+    # Вырежем числовые лексемы
+    $expression =~ s|\d+||g;
+
+    return 0 unless $expression;
+
+    print Dumper($expression);
+
+    return 1;
 }
 
 1;

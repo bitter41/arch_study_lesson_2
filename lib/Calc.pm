@@ -18,6 +18,41 @@ use constant LEXEMES_ALLOW_LIST    => (
                                       ),
                                       OPERATOR_LEXEMES_LIST;
 
+
+=head2 C<calc_expression>($expression)
+
+Посчитать результат выражения
+
+=cut
+
+sub calc_expression {
+    my ($expression) = @_;
+
+    my $result;
+
+    my $expression_in_reverse_polish_notation = convert_to_reverse_polish_notation($expression);
+    my @expression_array = split //, $expression_in_reverse_polish_notation;
+    my @stack = ();
+    foreach my $lexeme (@expression_array) {
+        if ( __is_number($lexeme) ) {
+            __push_to_stack(\@stack, $lexeme);
+        }
+        elsif ( __is_operator($lexeme) ) {
+            my $number_lexeme_right = pop @stack;
+            my $number_lexeme_left  = pop @stack;
+
+            my $result_of_operation = eval( "$number_lexeme_left $lexeme $number_lexeme_right" );
+            __push_to_stack(\@stack, $result_of_operation);
+        }
+        #print "$lexeme\t" . join(',', @stack) . "\n";
+    }
+
+    die 'Something wrong with expression, have some unused lexemes in stack: ' . join(',', @stack)
+        if scalar @stack > 1;
+
+    return pop @stack;
+}
+
 =head2 C<convert_to_reverse_polish_notation>($expression)
 
 Конвертировать выражение в обратную польскую запись

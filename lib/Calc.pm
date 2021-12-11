@@ -52,6 +52,7 @@ sub convert_to_reverse_polish_notation {
             #print Dumper($u);
             $result_in_rpn .= $u;
         }
+        #print "$lexeme\t" . join('', @stack) . "\t" . $result_in_rpn . "\n";
     }
     $result_in_rpn .= __unload_stack( \@stack );
 

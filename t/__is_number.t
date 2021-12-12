@@ -15,8 +15,8 @@ describe '__is_number: ' => sub {
             ok ! Calc::__is_number( undef );
         };
 
-        it 'should return 0 for wrong lexeme with string length > 1' => sub {
-            ok ! Calc::__is_number( '++++' );
+        it 'should return 2 for lexeme with more then one digit' => sub {
+            ok Calc::__is_number( '444' );
         };
 
         it 'should return 0 for wrong lexeme with empty string' => sub {

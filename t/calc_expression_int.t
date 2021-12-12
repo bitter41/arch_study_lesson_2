@@ -56,6 +56,10 @@ describe 'calc_expression: ' => sub {
             is Calc::calc_expression( '((1 + 2) * 4 + 6) / 3' ), 6;
         };
 
+        it 'calc for: (1+2) * 14 /6 +2 * (3+2) = ??' => sub {
+            is Calc::calc_expression( '(1+2) * 14 /6 +2 * (3+2)' ), 17;
+        };
+
     };
 };
 

@@ -29,46 +29,46 @@ describe '__unload_operators: ' => sub {
         it 'should not unload stack if not operator on top' => sub {
             my @stack = qw/ 4 4 4 4 /;
 
-            my $result = Calc::__unload_operators( \@stack, '*' );
+            my @result = Calc::__unload_operators( \@stack, '*' );
 
-            is $result, '';
-            cmp_deeply(\@stack, [qw/ 4 4 4 4 /]);
+            cmp_deeply \@result, [];
+            cmp_deeply \@stack, [qw/ 4 4 4 4 /];
         };
 
         it 'should not unload stack if operator in top, but priority of top lexeme less then priority of arg operator' => sub {
             my @stack = qw/ 4 4 4 - /;
 
-            my $result = Calc::__unload_operators( \@stack, '*' );
+            my @result = Calc::__unload_operators( \@stack, '*' );
 
-            is $result, '';
-            cmp_deeply(\@stack, [qw/ 4 4 4 - /]);
+            cmp_deeply \@result, [];
+            cmp_deeply \@stack, [qw/ 4 4 4 - /];
         };
 
         it 'should unload operator from stack if operator in top, and priority of top lexeme more then priority of arg operator' => sub {
             my @stack = qw/ 4 4 4 * /;
 
-            my $result = Calc::__unload_operators( \@stack, '-' );
+            my @result = Calc::__unload_operators( \@stack, '-' );
 
-            is $result, '* ';
-            cmp_deeply(\@stack, [qw/ 4 4 4 /]);
+            cmp_deeply \@result, ['*'];
+            cmp_deeply \@stack, [qw/ 4 4 4 /];
         };
 
         it 'should unload operator from stack if operator in top, and priority of top lexeme same as priority of arg operator' => sub {
             my @stack = qw/ 4 4 4 - /;
 
-            my $result = Calc::__unload_operators( \@stack, '+' );
+            my @result = Calc::__unload_operators( \@stack, '+' );
 
-            is $result, '- ';
-            cmp_deeply(\@stack, [qw/ 4 4 4 /]);
+            cmp_deeply \@result, ['-'];
+            cmp_deeply \@stack, [qw/ 4 4 4 /];
         };
 
         it 'should unload more than one operator from stack if operator in top, and priority of top lexeme more then priority of arg operator' => sub {
             my @stack = qw| 4 / * * |;
 
-            my $result = Calc::__unload_operators( \@stack, '-' );
+            my @result = Calc::__unload_operators( \@stack, '-' );
 
-            is $result, '* * / ';
-            cmp_deeply(\@stack, [qw/ 4 /]);
+            cmp_deeply \@result, [qw( * * / )];
+            cmp_deeply \@stack, [qw/ 4 /];
         };
 
     };

@@ -30,11 +30,10 @@ sub calc_expression {
 
     my $result;
 
-    my $expression_in_reverse_polish_notation = convert_to_reverse_polish_notation($expression);
-    my @expression_array = split //, $expression_in_reverse_polish_notation;
+    my @expression_in_reverse_polish_notation_array = __convert_to_reverse_polish_notation($expression);
     my @stack = ();
     print "lexeme\tstack\n" if $params->{debug_mode};
-    foreach my $lexeme (@expression_array) {
+    foreach my $lexeme (@expression_in_reverse_polish_notation_array) {
         if ( __is_number($lexeme) ) {
             __push_to_stack(\@stack, $lexeme);
         }
@@ -63,38 +62,54 @@ sub calc_expression {
 sub convert_to_reverse_polish_notation {
     my ($expression) = @_;
 
-    my $result_in_rpn = '';
+    my @result_in_rpn_array = __convert_to_reverse_polish_notation($expression);
+    
+    my $result_in_rpn = join ' ', @result_in_rpn_array;
+    #print Dumper(\@result_in_rpn_array, $result_in_rpn);
+
+    return $result_in_rpn;
+}
+
+=head2 C<__convert_to_reverse_polish_notation>($expression)
+
+Конвертировать выражение в обратную польскую запись, возвращает массив
+
+=cut
+
+sub __convert_to_reverse_polish_notation {
+    my ($expression) = @_;
+
+    my @result_in_rpn_array = ();
 
     die 'Argument must be string'                     if ref $expression;
     die "Found wrong lexeme in argument: $expression" if __has_any_wrong_lexemes($expression);
 
     my @stack = ();
-    my @expression_array = split //, $expression;
+    my @expression_array = __split_expression($expression);
+    #print Dumper(\@expression_array);
     foreach my $lexeme (@expression_array) {
         next unless __is_lexeme($lexeme);
 
         if ( __is_number($lexeme) ) {
-            $result_in_rpn .= "$lexeme ";
+            push @result_in_rpn_array, $lexeme;
         }
         elsif ( __is_operator($lexeme) ) {
-            $result_in_rpn .= __unload_operators(\@stack, $lexeme);
+            push @result_in_rpn_array, __unload_operators(\@stack, $lexeme);
             __push_to_stack( \@stack, $lexeme );
         }
         elsif ( __is_open_bracket($lexeme) ) {
             __push_to_stack( \@stack, $lexeme );
         }
         elsif ( __is_close_bracket($lexeme) ) {
-            my $u = __unload_stack_to_open_bracket( \@stack );
-            #print Dumper($u);
-            $result_in_rpn .= $u;
+            push @result_in_rpn_array, __unload_stack_to_open_bracket( \@stack );
         }
         #print "$lexeme\t" . join('', @stack) . "\t" . $result_in_rpn . "\n";
     }
-    $result_in_rpn .= __unload_stack( \@stack );
+    push @result_in_rpn_array, __unload_stack( \@stack );
 
     #print Dumper(\@expression_array);
 
-    return $result_in_rpn;
+    return @result_in_rpn_array;
 }
 
 =head2 C<__has_any_wrong_lexemes>($expression)
@@ -128,9 +143,9 @@ sub __is_lexeme {
 
     $lexeme ||= '';
 
-    return 0 if length($lexeme) != 1;
+    return 1 if $lexeme =~ /\d+/;
 
-    return 1 if $lexeme =~ /\d/;
+    return 0 if length($lexeme) != 1;
 
     foreach my $allow_lexeme (LEXEMES_ALLOW_LIST) {
         return 1 if $lexeme eq $allow_lexeme;
@@ -150,9 +165,7 @@ sub __is_number {
 
     $lexeme ||= '';
 
-    return 0 if length($lexeme) != 1;
-
-    return 1 if $lexeme =~ /\d/;
+    return 1 if $lexeme =~ /\d+/;
 
     return 0;
 }
@@ -238,7 +251,7 @@ sub __unload_stack_to_open_bracket {
 
     die 'Argument must be array ref' if ref $stack_ref ne 'ARRAY';
 
-    my $result             = '';
+    my @result             = ();
     my $open_bracket_found = 0;
     while (@$stack_ref) {
         my $lexeme = pop @$stack_ref;
@@ -246,12 +259,12 @@ sub __unload_stack_to_open_bracket {
             $open_bracket_found = 1;
             last;
         };
-        $result .= "$lexeme ";
+        push @result, $lexeme;
     }
 
     die 'Seems you missed open bracket' unless $open_bracket_found;
 
-    return $result;
+    return @result;
 }
 
 =head2 C<__unload_stack>($stack_ref)
@@ -265,14 +278,14 @@ sub __unload_stack {
 
     die 'Argument must be array ref' if ref $stack_ref ne 'ARRAY';
 
-    my $result = '';
+    my @result = ();
     while (@$stack_ref) {
         my $lexeme = pop @$stack_ref;
         die 'Seems you missed close bracket' if $lexeme eq OPEN_BRACKET_LEXEME;
-        $result .= "$lexeme ";
+        push @result, $lexeme;
     }
 
-    return $result;
+    return @result;
 }
 
 =head2 C<__unload_operators>($stack_ref, $operator_lexeme)
@@ -287,17 +300,49 @@ sub __unload_operators {
     die 'Argument must be array ref'       if ref $stack_ref ne 'ARRAY';
     die 'Argument must by operator lexeme' unless __is_operator($operator_lexeme);
 
-    my $result = '';
+    my @result = ();
     while (@$stack_ref) {
         my $lexeme_from_top = $stack_ref->[-1];
         last unless __is_operator($lexeme_from_top);
         last if OPERATOR_LEXEMES_PRIORITY->{$lexeme_from_top} < OPERATOR_LEXEMES_PRIORITY->{$operator_lexeme};
 
-        $result .= pop @$stack_ref;
-        $result .= ' ';
+        push @result, pop @$stack_ref;
     }
 
-    return $result;
+    return @result;
+}
+
+=head2 C<__split_expression>($expression)
+
+Разбить строку выражение на массив
+
+=cut
+
+sub __split_expression {
+    my ($expression) = @_;
+
+    my @result_array = ();
+
+    # Удалим все пробельные символы
+    $expression =~s/\s+//g;
+
+    foreach my $lexeme (split //, $expression) {
+        my $last_lexeme = $result_array[-1] || '';
+        
+        if (
+            $last_lexeme
+            && __is_number($last_lexeme)
+            && __is_number($lexeme)
+        ) {
+            $last_lexeme = pop @result_array;
+            $lexeme = $last_lexeme . $lexeme;
+        }
+
+        push @result_array, $lexeme;
+    }
+
+
+    return @result_array;
 }
 
 1;

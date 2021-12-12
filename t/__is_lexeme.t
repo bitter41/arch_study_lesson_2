@@ -27,6 +27,10 @@ describe '__is_lexeme: ' => sub {
             ok Calc::__is_lexeme( '4' );
         };
 
+        it 'should return 1 for right numeric lexeme' => sub {
+            ok Calc::__is_lexeme( '4444' );
+        };
+
         it 'should return 1 for right allowed lexeme: (' => sub {
             ok Calc::__is_lexeme( '(' );
         };

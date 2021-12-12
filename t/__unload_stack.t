@@ -31,10 +31,10 @@ describe '__unload_stack: ' => sub {
         it 'should unload stack to open bracket' => sub {
             my @stack = qw/ 1 2 3 4 5 6 /;
 
-            my $result = Calc::__unload_stack( \@stack );
+            my @result = Calc::__unload_stack( \@stack );
 
-            is $result, '6 5 4 3 2 1 ';
-            cmp_deeply(\@stack, []);
+            cmp_deeply \@result, [qw( 6 5 4 3 2 1 )];
+            cmp_deeply \@stack, [];
         };
 
     };

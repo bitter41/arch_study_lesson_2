@@ -45,20 +45,25 @@ describe 'convert_to_reverse_polish_notation: ' => sub {
     describe '[SUCCESS] ' => sub {
 
         it 'check for: (1 + 2) * 4 + 3' => sub {
-            is Calc::convert_to_reverse_polish_notation( '(1 + 2) * 4 + 3' ), '1 2 + 4 * 3 + ';
+            is Calc::convert_to_reverse_polish_notation( '(1 + 2) * 4 + 3' ), '1 2 + 4 * 3 +';
         };
 
         it '[EXPECTED, BUT WRONG CASE ????] check for bracket maniac: (1) (+) (2) (*) (4) (-) (3)' => sub {
-            is Calc::convert_to_reverse_polish_notation( '(1) (+) (2) (*) (4) (-) (3)' ), '1 + 2 * 4 - 3 ';
+            is Calc::convert_to_reverse_polish_notation( '(1) (+) (2) (*) (4) (-) (3)' ), '1 + 2 * 4 - 3';
         };
 
         it 'check for expression: 1 + 2 * 4 - 3' => sub {
-            is Calc::convert_to_reverse_polish_notation( '1 + 2 * 4 - 3' ), '1 2 4 * + 3 - ';
+            is Calc::convert_to_reverse_polish_notation( '1 + 2 * 4 - 3' ), '1 2 4 * + 3 -';
         };
 
         it 'check for bracket maniac: ((1 + 2) * 4 + 6) / 3' => sub {
-            is Calc::convert_to_reverse_polish_notation( '((1 + 2) * 4 + 6) / 3' ), '1 2 + 4 * 6 + 3 / ';
+            is Calc::convert_to_reverse_polish_notation( '((1 + 2) * 4 + 6) / 3' ), '1 2 + 4 * 6 + 3 /';
         };
+
+        it 'check for bracket maniac: (1+2) * 14 /6 +2 * (3+2)' => sub {
+            is Calc::convert_to_reverse_polish_notation( '(1+2) * 14 /6 +2 * (3+2)' ), '1 2 + 14 * 6 / 2 3 2 + * +';
+        };
+
 
     };
 };

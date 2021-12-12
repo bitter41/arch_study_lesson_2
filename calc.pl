@@ -51,5 +51,3 @@ THEEND
 
     print "Result of expression: $result\n\n\n";
 }
-
-#     (1+2) * 14 /6 +2 * (3+2)

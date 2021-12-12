@@ -28,11 +28,9 @@ use constant LEXEMES_ALLOW_LIST    => (
 sub calc_expression {
     my ($expression, $params) = @_;
 
-    my $result;
-
-    my @expression_in_reverse_polish_notation_array = __convert_to_reverse_polish_notation($expression);
-    my @stack = ();
     print "lexeme\tstack\n" if $params->{debug_mode};
+    my @stack = ();
+    my @expression_in_reverse_polish_notation_array = __convert_to_reverse_polish_notation($expression);
     foreach my $lexeme (@expression_in_reverse_polish_notation_array) {
         if ( __is_number($lexeme) ) {
             __push_to_stack(\@stack, $lexeme);
@@ -41,8 +39,8 @@ sub calc_expression {
             my $number_lexeme_right = pop @stack;
             my $number_lexeme_left  = pop @stack;
 
-            my $result_of_operation = eval( "$number_lexeme_left $lexeme $number_lexeme_right" );
-            __push_to_stack(\@stack, $result_of_operation);
+            my $result_of_operation = eval("$number_lexeme_left $lexeme $number_lexeme_right");
+            __push_to_stack( \@stack, $result_of_operation );
         }
         print "$lexeme\t" . join(',', @stack) . "\n" if $params->{debug_mode};
     }
@@ -63,9 +61,7 @@ sub convert_to_reverse_polish_notation {
     my ($expression) = @_;
 
     my @result_in_rpn_array = __convert_to_reverse_polish_notation($expression);
-    
-    my $result_in_rpn = join ' ', @result_in_rpn_array;
-    #print Dumper(\@result_in_rpn_array, $result_in_rpn);
+    my $result_in_rpn       = join ' ', @result_in_rpn_array;
 
     return $result_in_rpn;
 }
@@ -86,7 +82,6 @@ sub __convert_to_reverse_polish_notation {
 
     my @stack = ();
     my @expression_array = __split_expression($expression);
-    #print Dumper(\@expression_array);
     foreach my $lexeme (@expression_array) {
         next unless __is_lexeme($lexeme);
 
@@ -95,19 +90,17 @@ sub __convert_to_reverse_polish_notation {
         }
         elsif ( __is_operator($lexeme) ) {
             push @result_in_rpn_array, __unload_operators(\@stack, $lexeme);
-            __push_to_stack( \@stack, $lexeme );
+            __push_to_stack(\@stack, $lexeme);
         }
         elsif ( __is_open_bracket($lexeme) ) {
-            __push_to_stack( \@stack, $lexeme );
+            __push_to_stack(\@stack, $lexeme);
         }
         elsif ( __is_close_bracket($lexeme) ) {
-            push @result_in_rpn_array, __unload_stack_to_open_bracket( \@stack );
+            push @result_in_rpn_array, __unload_stack_to_open_bracket(\@stack);
         }
         #print "$lexeme\t" . join('', @stack) . "\t" . $result_in_rpn . "\n";
     }
-    push @result_in_rpn_array, __unload_stack( \@stack );
-
-    #print Dumper(\@expression_array);
+    push @result_in_rpn_array, __unload_stack(\@stack);
 
     return @result_in_rpn_array;
 }
@@ -315,6 +308,8 @@ sub __unload_operators {
 =head2 C<__split_expression>($expression)
 
 Разбить строку выражение на массив
+Эта функция нужна только для того чтобы корректно разбивать строки с числами,
+т.е. числовые лексемы, состоящие более чем из одной цифры
 
 =cut
 

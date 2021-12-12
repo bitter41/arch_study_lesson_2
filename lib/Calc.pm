@@ -19,20 +19,21 @@ use constant LEXEMES_ALLOW_LIST    => (
                                       OPERATOR_LEXEMES_LIST;
 
 
-=head2 C<calc_expression>($expression)
+=head2 C<calc_expression>($expression, $params)
 
 Посчитать результат выражения
 
 =cut
 
 sub calc_expression {
-    my ($expression) = @_;
+    my ($expression, $params) = @_;
 
     my $result;
 
     my $expression_in_reverse_polish_notation = convert_to_reverse_polish_notation($expression);
     my @expression_array = split //, $expression_in_reverse_polish_notation;
     my @stack = ();
+    print "lexeme\tstack\n" if $params->{debug_mode};
     foreach my $lexeme (@expression_array) {
         if ( __is_number($lexeme) ) {
             __push_to_stack(\@stack, $lexeme);
@@ -44,7 +45,7 @@ sub calc_expression {
             my $result_of_operation = eval( "$number_lexeme_left $lexeme $number_lexeme_right" );
             __push_to_stack(\@stack, $result_of_operation);
         }
-        #print "$lexeme\t" . join(',', @stack) . "\n";
+        print "$lexeme\t" . join(',', @stack) . "\n" if $params->{debug_mode};
     }
 
     die 'Something wrong with expression, have some unused lexemes in stack: ' . join(',', @stack)
@@ -112,8 +113,6 @@ sub __has_any_wrong_lexemes {
     $expression =~ s|\d+||g;
 
     return 0 unless $expression;
-
-    print Dumper($expression);
 
     return 1;
 }
